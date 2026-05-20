@@ -9,4 +9,5 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('poke-app');
+  descripcion = "Esta es una pagina web desarrollada con Angular";
 }
