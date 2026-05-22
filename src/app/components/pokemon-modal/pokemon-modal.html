@@ -1,1 +1,67 @@
-<p>pokemon-modal works!</p>
+@if (pokemon()) {
+  <div class="overlay open" (click)="onOverlayClick($event)">
+    <div class="modal">
+      <div class="modal-top">
+        <div>
+          <div class="modal-num">#{{ padId(pokemon()!.id) }}</div>
+          <div class="modal-name">{{ pokemon()!.name }}</div>
+          <div class="modal-types">
+            @for (t of pokemon()!.types; track t.type.name) {
+              <span class="badge"
+                    [style.background]="typeColor(t.type.name).bg"
+                    [style.color]="typeColor(t.type.name).text">
+                {{ t.type.name }}
+              </span>
+            }
+          </div>
+        </div>
+        <button class="close-btn" (click)="close.emit()">✕</button>
+      </div>
+
+      <div class="modal-img">
+        <img [src]="sprite" [alt]="pokemon()!.name">
+      </div>
+
+      <div class="modal-body">
+        <div class="info-grid">
+          <div class="info-tile">
+            <div class="label">Altura</div>
+            <div class="value">{{ (pokemon()!.height / 10).toFixed(1) }} m</div>
+          </div>
+          <div class="info-tile">
+            <div class="label">Peso</div>
+            <div class="value">{{ (pokemon()!.weight / 10).toFixed(1) }} kg</div>
+          </div>
+          <div class="info-tile">
+            <div class="label">Exp. base</div>
+            <div class="value">{{ pokemon()!.base_experience ?? '—' }}</div>
+          </div>
+          <div class="info-tile">
+            <div class="label">Número</div>
+            <div class="value">{{ pokemon()!.id }}</div>
+          </div>
+        </div>
+
+        <div class="section-title">Estadísticas base</div>
+        @for (s of pokemon()!.stats; track s.stat.name; let i = $index) {
+          <div class="stat-row">
+            <div class="stat-name">{{ statName(s.stat.name) }}</div>
+            <div class="stat-track">
+              <div class="stat-fill"
+                   [style.width.%]="statPct(s.base_stat)"
+                   [style.background]="statColor(i)"></div>
+            </div>
+            <div class="stat-val">{{ s.base_stat }}</div>
+          </div>
+        }
+
+        <div class="section-title" style="margin-top:1rem">Habilidades</div>
+        <div class="ability-list">
+          @for (a of pokemon()!.abilities; track a.ability.name) {
+            <span class="ability-tag">{{ a.ability.name }}</span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

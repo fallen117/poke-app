@@ -1,1 +1,78 @@
-<h1>{{descripcion}}</h1>
+<div class="container">
+  <header>
+    <div class="logo">Poké<span>dex</span></div>
+    <p class="subtitle">
+      @if (loading()) { Cargando... }
+      @else { {{ allPokemon().length }} Pokémon en total }
+    </p>
+  </header>
+
+  <!-- Buscador -->
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" placeholder="Buscar Pokémon..."
+             [ngModel]="search()" (ngModelChange)="onSearch($event)">
+    </div>
+  </div>
+
+  <!-- Filtros generación -->
+  <div class="gen-filters">
+    @for (g of GENERATIONS; track g.gen) {
+      <button class="gen-btn" [class.active]="activeGen() === g.gen" (click)="setGen(g.gen)">
+        {{ g.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Filtros tipo -->
+  <div class="filters" [style.display]="knownTypes().length ? 'flex' : 'none'">
+    <button class="filter-btn" [class.active]="activeType() === 'all'" (click)="setType('all')">
+      Tipos
+    </button>
+    @for (t of knownTypes(); track t) {
+      <button class="filter-btn" [class.active]="activeType() === t" (click)="setType(t)">
+        {{ t }}
+      </button>
+    }
+  </div>
+
+  <!-- Barra de paginación -->
+  <div class="stats-bar">
+    <span><strong>{{ filtered().length }}</strong> Pokémon encontrados</span>
+    <div class="pagination">
+      <button class="page-btn" [disabled]="currentPage() <= 1" (click)="goToPage(currentPage() - 1)">
+        ← Anterior
+      </button>
+      <span class="page-info">Página {{ currentPage() }} de {{ totalPages() }}</span>
+      <button class="page-btn" [disabled]="currentPage() >= totalPages()" (click)="goToPage(currentPage() + 1)">
+        Siguiente →
+      </button>
+      <div class="range-wrap">
+        <input type="range" [min]="1" [max]="totalPages()" [value]="currentPage()"
+               (input)="goToPage(+$any($event.target).value)">
+        <span class="range-label">{{ currentPage() }} / {{ totalPages() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid de tarjetas -->
+  <div class="grid">
+    @if (loading()) {
+      @for (s of [].constructor(PAGE_SIZE); track $index) {
+        <div class="skeleton"></div>
+      }
+    } @else {
+      @for (p of pageItems(); track p.id) {
+        <app-pokemon-card [item]="p" (select)="openModal($event)" />
+      }
+    }
+  </div>
+</div>
+
+<!-- Modal -->
+<app-pokemon-modal
+  [pokemon]="selectedPokemon()"
+  (close)="closeModal()" />

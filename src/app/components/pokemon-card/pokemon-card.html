@@ -1,1 +1,18 @@
-<p>pokemon-card works!</p>
+@if (data) {
+  <div class="card"
+       [style.--card-glow]="mainColor.badge"
+       (click)="select.emit(item().id)">
+    <div class="card-num">#{{ padId(data.id) }}</div>
+    <img [src]="sprite" [alt]="data.name" loading="lazy">
+    <div class="card-name">{{ data.name }}</div>
+    <div class="types">
+      @for (t of data.types; track t.type.name) {
+        <span class="badge"
+              [style.background]="typeColor(t.type.name).bg"
+              [style.color]="typeColor(t.type.name).text">
+          {{ t.type.name }}
+        </span>
+      }
+    </div>
+  </div>
+}
